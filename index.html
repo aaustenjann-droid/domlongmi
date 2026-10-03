@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="km">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      (function () {
+        try {
+          var _origFetch = typeof window !== 'undefined' && window.fetch ? window.fetch.bind(window) : null;
+          var _currentFetch = _origFetch;
+          function getFetch() {
+            return _currentFetch;
+          }
+          function setFetch(val) {
+            _currentFetch = val;
+          }
+          try {
+            Object.defineProperty(window, 'fetch', {
+              get: getFetch,
+              set: setFetch,
+              configurable: true,
+              enumerable: true,
+            });
+          } catch (e) {}
+          if (typeof Window !== 'undefined' && Window.prototype) {
+            try {
+              Object.defineProperty(Window.prototype, 'fetch', {
+                get: getFetch,
+                set: setFetch,
+                configurable: true,
+                enumerable: true,
+              });
+            } catch (e) {}
+          }
+          if (typeof globalThis !== 'undefined' && globalThis !== window) {
+            try {
+              Object.defineProperty(globalThis, 'fetch', {
+                get: getFetch,
+                set: setFetch,
+                configurable: true,
+                enumerable: true,
+              });
+            } catch (e) {}
+          }
+        } catch (err) {}
+      })();
+    </script>
+    <title>Cassava Wholesale Invoice Webapp</title>
+    <meta name="description" content="App for recording wholesale goods like cassava in tons with different prices, and printing PDF invoices." />
+    <meta property="og:title" content="Cassava Wholesale Invoice Webapp" />
+    <meta property="og:description" content="App for recording wholesale goods like cassava in tons with different prices, and printing PDF invoices." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Caveat:wght@400..700&family=Kantumruy+Pro:ital,wght@0,300..700;1,300..700&family=Moul&family=Moulpali&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Siemreap&display=swap" rel="stylesheet">
+  </head>
+  <body class="font-khmer antialiased bg-gray-50 text-gray-900">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

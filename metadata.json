@@ -1,0 +1,5 @@
+{
+  "name": "Cassava Wholesale Invoice Webapp",
+  "description": "App for recording wholesale goods like cassava in tons with different prices, and printing PDF invoices.",
+  "requestFramePermissions": []
+}
