@@ -88,11 +88,9 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
   // For A4 Clean Template: base width is 760px.
   // If available workspace width is less than 760px, calculate exact scale:
   const availableWidth = workspaceWidth > 0 ? workspaceWidth - 16 : 760;
-  const isConstrainedScreen = availableWidth < 760;
-  const scaleFactor =
-    zoomMode === 'fit' && activeStyle === 'clean' && isConstrainedScreen
-      ? Math.min(1, Math.max(0.35, availableWidth / 760))
-      : 1;
+  const baseWidth = 760;
+  const calculatedScale = availableWidth < baseWidth ? availableWidth / baseWidth : 1;
+  const scaleFactor = zoomMode === 'fit' ? calculatedScale : 1;
 
   if (!invoice) {
     return (
@@ -205,14 +203,14 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
       {/* Top Action & Style Controls - Hidden when Printing */}
       <div className="print:hidden space-y-3 mb-6">
         {/* Navigation & Two Styles Bar: Responsive on mobile & tablet */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-white p-3 sm:p-3.5 rounded-xl shadow-sm border border-gray-100">
-          {/* Row 1: Back, Edit, Delete and (on mobile) Print */}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 sm:gap-2">
+        <div className="flex flex-col gap-3 bg-white p-3 sm:p-3.5 rounded-xl shadow-sm border border-gray-100">
+          {/* Row 1: Back, Edit, Delete, Print and PDF */}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <button
                 type="button"
                 onClick={onBack}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium text-xs sm:text-sm cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors font-medium text-xs sm:text-sm cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
                 <span className="hidden xs:inline">បញ្ជីវីក្កយបត្រ</span>
@@ -222,7 +220,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
                 <button
                   type="button"
                   onClick={() => onEdit(invoice.id)}
-                  className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors font-medium text-xs sm:text-sm border border-blue-200 cursor-pointer"
+                  className="flex items-center gap-1 px-2.5 py-1.5 text-blue-700 hover:bg-blue-50 rounded-lg transition-colors font-medium text-xs sm:text-sm border border-blue-200 cursor-pointer"
                 >
                   <Edit className="w-3.5 h-3.5" />
                   <span>កែសម្រួល</span>
@@ -231,7 +229,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
               <button
                 type="button"
                 onClick={() => setShowDeleteModal(true)}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-xs sm:text-sm border border-rose-200 cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium text-xs sm:text-sm border border-rose-200 cursor-pointer"
                 title="Delete Invoice"
               >
                 <Trash2 className="w-3.5 h-3.5" />
@@ -239,26 +237,26 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
               </button>
             </div>
 
-            {/* Mobile Print & PDF Buttons */}
-            <div className="flex items-center gap-1.5 md:hidden">
+            {/* Print & PDF Buttons (Visible on all screens, wrapped cleanly) */}
+            <div className="flex items-center gap-1.5">
               <button
                 type="button"
                 onClick={handlePrint}
                 disabled={isPrinting}
-                className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs disabled:opacity-75"
+                className="flex items-center gap-1 px-3 py-1.5 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
                 title="បោះពុម្ពវិក្កយបត្រ (Print)"
               >
-                <Printer className={`w-3.5 h-3.5 text-emerald-400 ${isPrinting ? 'animate-pulse' : ''}`} />
+                <Printer className={`w-4 h-4 text-emerald-400 ${isPrinting ? 'animate-pulse' : ''}`} />
                 <span>ព្រីន</span>
               </button>
               <button
                 type="button"
                 onClick={handlePrint}
                 disabled={isPrinting}
-                className="flex items-center gap-1 px-2.5 py-1.5 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs disabled:opacity-75"
+                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
                 title="ទាញយកជា PDF (Download PDF)"
               >
-                <Download className="w-3.5 h-3.5 text-white" />
+                <Download className="w-4 h-4 text-white" />
                 <span>PDF</span>
               </button>
             </div>
@@ -326,18 +324,6 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
                 </button>
               </div>
 
-              {/* Mobile/Tablet Screen Fit Toggle */}
-              {activeStyle === 'clean' && isConstrainedScreen && (
-                <button
-                  type="button"
-                  onClick={() => setZoomMode(zoomMode === 'fit' ? 'full' : 'fit')}
-                  className="px-2.5 py-1 text-xs font-semibold rounded-lg border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 shadow-2xs transition-colors cursor-pointer"
-                  title="Toggle mobile fit zoom"
-                >
-                  {zoomMode === 'fit' ? '🔍 ១០០%' : '📱 សមអេក្រង់'}
-                </button>
-              )}
-
               {/* Desktop Print & PDF Buttons */}
               <div className="hidden md:flex items-center gap-1.5">
                 <button
@@ -366,51 +352,69 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
         </div>
       </div>
 
-      {/* A4 Paper Sheet Workspace with horizontal scroll & mobile/tablet dynamic fit */}
+      {/* A4 Paper Sheet Workspace with horizontal scroll for exact desktop preview */}
       <div
         ref={workspaceRef}
         className={`p-2 sm:p-4 md:p-6 lg:p-8 rounded-2xl flex flex-col items-center overflow-x-auto w-full transition-all ${
           activeStyle === 'clean' ? 'bg-slate-200/80 shadow-inner' : 'bg-gray-100/80'
         }`}
       >
-        {/* Full size scroll hint on mobile/tablet when 100% zoom is active */}
-        {zoomMode === 'full' && isConstrainedScreen && activeStyle === 'clean' && (
-          <div className="text-[11px] text-slate-600 font-khmer pb-2 flex items-center gap-1 print:hidden">
-            <span>↔ អូសឆ្វេង-ស្តាំ ដើម្បីមើលសន្លឹក A4 ពេញលេញ (Scroll to view full sheet)</span>
+        {/* Mobile/Tablet Screen Fit Toggle & Scroll Hint */}
+        {activeStyle === 'clean' && availableWidth < 760 && (
+          <div className="flex items-center justify-between w-full max-w-[760px] pb-2 text-xs text-slate-600 print:hidden px-1">
+            <span className="font-khmer">
+              {zoomMode === 'fit' ? '📱 ពង្រីកសមនឹងអេក្រង់ (Auto-fit to screen)' : '↔ រមូរឆ្វេង-ស្តាំ (100% Full size)'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setZoomMode(zoomMode === 'fit' ? 'full' : 'fit')}
+              className="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-md border border-slate-300 shadow-2xs transition-all cursor-pointer"
+            >
+              {zoomMode === 'fit' ? 'ទំហំពិត 100% (Full)' : 'សមនឹងអេក្រង់ (Fit)'}
+            </button>
           </div>
         )}
 
-        {/* Scaled viewport container for mobile view if scaleFactor < 1 */}
-        <div
-          style={
-            scaleFactor < 1
-              ? {
-                  width: `${Math.round(760 * scaleFactor)}px`,
-                  height: `${Math.round((contentHeight || 1080) * scaleFactor)}px`,
-                }
-              : undefined
-          }
-          className={scaleFactor < 1 ? 'relative overflow-hidden transition-all duration-150 shrink-0 mx-auto' : 'w-full flex justify-center'}
-        >
-          {/* PHYSICAL A4 PAPER SHEET CONTAINER (Maintains true A4 proportions: width 210mm / min 760px) */}
+        {/* Viewport container */}
+        <div className="w-full flex justify-center">
+          {/* Scaled Wrapper for centering and sizing */}
           <div
-            ref={printableAreaRef}
-            id="printable-area"
             style={
-              scaleFactor < 1
+              scaleFactor < 1 && zoomMode === 'fit'
                 ? {
-                    transform: `scale(${scaleFactor})`,
-                    transformOrigin: 'top left',
-                    width: '760px',
+                    width: `${baseWidth * scaleFactor}px`,
+                    height: `${contentHeight * scaleFactor}px`,
+                    maxWidth: '100%',
                   }
-                : undefined
+                : {
+                    width: activeStyle === 'clean' ? '760px' : '100%',
+                    maxWidth: '100%',
+                  }
             }
-            className={
-              activeStyle === 'clean'
-                ? 'w-[210mm] min-w-[760px] max-w-[210mm] min-h-[297mm] bg-white text-slate-900 shadow-[0_14px_50px_rgba(0,0,0,0.16)] border border-slate-300/90 rounded-none print:shadow-none print:border-none print:rounded-none print:w-full print:max-w-full print:min-w-0 print:min-h-0 print:m-0 print:p-0 transition-all'
-                : 'w-full max-w-[130mm] bg-white text-slate-900 shadow-lg border border-slate-300/80 rounded-lg print:shadow-none print:border-none print:rounded-none'
-            }
+            className="relative mx-auto flex justify-center"
           >
+            {/* PHYSICAL A4 PAPER SHEET CONTAINER (Maintains true A4 proportions: width 210mm / min 760px) */}
+            <div
+              ref={printableAreaRef}
+              id="printable-area"
+              style={
+                scaleFactor < 1 && zoomMode === 'fit'
+                  ? {
+                      transform: `scale(${scaleFactor})`,
+                      transformOrigin: 'top left',
+                      width: `${baseWidth}px`,
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                    }
+                  : undefined
+              }
+              className={
+                activeStyle === 'clean'
+                  ? 'w-[210mm] min-w-[760px] max-w-[210mm] min-h-[297mm] bg-white text-slate-900 shadow-[0_14px_50px_rgba(0,0,0,0.16)] border border-slate-300/90 rounded-none print:shadow-none print:border-none print:rounded-none print:w-full print:max-w-full print:min-w-0 print:min-h-0 print:m-0 print:p-0 transition-all'
+                  : 'w-full max-w-[130mm] bg-white text-slate-900 shadow-lg border border-slate-300/80 rounded-lg print:shadow-none print:border-none print:rounded-none'
+              }
+            >
           {activeStyle === 'clean' ? (
             <CleanInvoiceTemplate
               invoice={invoice}
@@ -446,6 +450,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
               language={printLanguage}
             />
           )}
+            </div>
           </div>
         </div>
       </div>
