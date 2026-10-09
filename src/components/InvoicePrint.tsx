@@ -120,24 +120,32 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
     pageStyle: `
       @page {
         size: ${activeStyle === 'clean' ? 'A4 portrait' : '80mm auto'};
-        margin: 6mm;
+        margin: 5mm;
       }
       @media print {
         * {
           -webkit-print-color-adjust: exact !important;
           print-color-adjust: exact !important;
         }
-        body {
+        body, html {
+          width: 210mm;
+          height: 297mm;
           margin: 0 !important;
           padding: 0 !important;
           background: white !important;
+          overflow: hidden !important;
         }
         .clean-invoice-page {
-          height: 283mm !important;
-          max-height: 283mm !important;
+          width: 200mm !important;
+          height: 285mm !important;
+          max-height: 285mm !important;
           overflow: hidden !important;
+          margin: 0 auto !important;
+          padding: 4mm !important;
           page-break-after: avoid !important;
+          page-break-inside: avoid !important;
           break-after: avoid !important;
+          break-inside: avoid !important;
         }
       }
     `,
@@ -396,7 +404,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
               }
               className={
                 activeStyle === 'clean'
-                  ? 'w-[210mm] min-w-[760px] max-w-[210mm] min-h-[297mm] bg-white text-slate-900 shadow-[0_14px_50px_rgba(0,0,0,0.16)] border border-slate-300/90 rounded-none print:shadow-none print:border-none print:rounded-none print:w-full print:max-w-full print:min-w-0 print:min-h-0 print:m-0 print:p-0 transition-all'
+                  ? 'w-[210mm] min-w-[760px] max-w-[210mm] min-h-[297mm] bg-white text-slate-900 shadow-[0_14px_50px_rgba(0,0,0,0.16)] border border-slate-300/90 rounded-none print:shadow-none print:border-none print:rounded-none print:w-[200mm] print:h-[285mm] print:max-h-[285mm] print:m-0 print:p-2 transition-all'
                   : 'w-full max-w-[130mm] bg-white text-slate-900 shadow-lg border border-slate-300/80 rounded-lg print:shadow-none print:border-none print:rounded-none'
               }
             >
