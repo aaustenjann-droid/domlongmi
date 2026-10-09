@@ -52,7 +52,9 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
   const [zoomMode, setZoomMode] = useState<'fit' | 'full'>('fit');
   const workspaceRef = useRef<HTMLDivElement>(null);
   const printableAreaRef = useRef<HTMLDivElement>(null);
-  const [workspaceWidth, setWorkspaceWidth] = useState<number>(0);
+  const [workspaceWidth, setWorkspaceWidth] = useState<number>(
+    typeof window !== 'undefined' ? window.innerWidth - 32 : 760
+  );
   const [contentHeight, setContentHeight] = useState<number>(1080);
 
   useEffect(() => {
@@ -204,7 +206,23 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
       <div className="print:hidden space-y-3 mb-6">
         {/* Navigation & Two Styles Bar: Responsive on mobile & tablet */}
         <div className="flex flex-col gap-3 bg-white p-3 sm:p-3.5 rounded-xl shadow-sm border border-gray-100">
-          {/* Row 1: Back, Edit, Delete, Print and PDF */}
+          {/* Mobile/Tablet Screen Fit Toggle & Scroll Hint (Moved to Top) */}
+          {activeStyle === 'clean' && availableWidth < 760 && (
+            <div className="flex items-center justify-between w-full pb-2.5 text-xs text-slate-600 border-b border-gray-100 px-1">
+              <span className="font-khmer font-medium">
+                {zoomMode === 'fit' ? '📱 ពង្រីកសមនឹងអេក្រង់ (Auto-fit to screen)' : '↔ រមូរឆ្វេង-ស្តាំ (100% Full size)'}
+              </span>
+              <button
+                type="button"
+                onClick={() => setZoomMode(zoomMode === 'fit' ? 'full' : 'fit')}
+                className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-md border border-slate-300 shadow-2xs transition-all cursor-pointer"
+              >
+                {zoomMode === 'fit' ? 'ទំហំពិត 100% (Full)' : 'សមនឹងអេក្រង់ (Fit)'}
+              </button>
+            </div>
+          )}
+
+          {/* Row 1: Back, Edit, Delete */}
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
               <button
@@ -236,34 +254,10 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
                 <span>លុប</span>
               </button>
             </div>
-
-            {/* Print & PDF Buttons (Visible on all screens, wrapped cleanly) */}
-            <div className="flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={handlePrint}
-                disabled={isPrinting}
-                className="flex items-center gap-1 px-3 py-1.5 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
-                title="បោះពុម្ពវិក្កយបត្រ (Print)"
-              >
-                <Printer className={`w-4 h-4 text-emerald-400 ${isPrinting ? 'animate-pulse' : ''}`} />
-                <span>ព្រីន</span>
-              </button>
-              <button
-                type="button"
-                onClick={handlePrint}
-                disabled={isPrinting}
-                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
-                title="ទាញយកជា PDF (Download PDF)"
-              >
-                <Download className="w-4 h-4 text-white" />
-                <span>PDF</span>
-              </button>
-            </div>
           </div>
 
-          {/* Row 2: Styles, Languages, and Viewport Fit Toggle */}
-          <div className="flex flex-wrap items-center justify-between md:justify-end gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-gray-100">
+          {/* Row 2: Styles, Languages, and Unified Print & PDF Buttons */}
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-gray-100">
             {/* Style Selector */}
             <div className="flex items-center gap-1 bg-slate-100 p-0.5 sm:p-1 rounded-lg">
               <button
@@ -292,7 +286,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-2">
               {/* Language Switch */}
               <div className="flex items-center gap-0.5 bg-gray-100 p-0.5 rounded-lg text-xs">
                 <button
@@ -324,13 +318,13 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
                 </button>
               </div>
 
-              {/* Desktop Print & PDF Buttons */}
-              <div className="hidden md:flex items-center gap-1.5">
+              {/* Print & PDF Action Buttons */}
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={handlePrint}
                   disabled={isPrinting}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 text-white font-bold rounded-lg hover:bg-slate-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
                   title="បោះពុម្ពវិក្កយបត្រ (Print Invoice)"
                 >
                   <Printer className={`w-4 h-4 text-emerald-400 ${isPrinting ? 'animate-pulse' : ''}`} />
@@ -340,7 +334,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
                   type="button"
                   onClick={handlePrint}
                   disabled={isPrinting}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 active:scale-95 transition-all shadow-sm cursor-pointer text-xs sm:text-sm disabled:opacity-75"
                   title="ទាញយកជា PDF (Download PDF)"
                 >
                   <Download className={`w-4 h-4 text-white ${isPrinting ? 'animate-pulse' : ''}`} />
@@ -359,22 +353,6 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
           activeStyle === 'clean' ? 'bg-slate-200/80 shadow-inner' : 'bg-gray-100/80'
         }`}
       >
-        {/* Mobile/Tablet Screen Fit Toggle & Scroll Hint */}
-        {activeStyle === 'clean' && availableWidth < 760 && (
-          <div className="flex items-center justify-between w-full max-w-[760px] pb-2 text-xs text-slate-600 print:hidden px-1">
-            <span className="font-khmer">
-              {zoomMode === 'fit' ? '📱 ពង្រីកសមនឹងអេក្រង់ (Auto-fit to screen)' : '↔ រមូរឆ្វេង-ស្តាំ (100% Full size)'}
-            </span>
-            <button
-              type="button"
-              onClick={() => setZoomMode(zoomMode === 'fit' ? 'full' : 'fit')}
-              className="px-2.5 py-1 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-md border border-slate-300 shadow-2xs transition-all cursor-pointer"
-            >
-              {zoomMode === 'fit' ? 'ទំហំពិត 100% (Full)' : 'សមនឹងអេក្រង់ (Fit)'}
-            </button>
-          </div>
-        )}
-
         {/* Viewport container */}
         <div className="w-full flex justify-center">
           {/* Scaled Wrapper for centering and sizing */}
