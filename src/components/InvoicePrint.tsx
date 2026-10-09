@@ -120,7 +120,7 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
     pageStyle: `
       @page {
         size: ${activeStyle === 'clean' ? 'A4 portrait' : '80mm auto'};
-        margin: 0;
+        margin: 6mm;
       }
       @media print {
         * {
@@ -131,6 +131,13 @@ export default function InvoicePrint({ id, onBack, onEdit }: InvoicePrintProps) 
           margin: 0 !important;
           padding: 0 !important;
           background: white !important;
+        }
+        .clean-invoice-page {
+          height: 283mm !important;
+          max-height: 283mm !important;
+          overflow: hidden !important;
+          page-break-after: avoid !important;
+          break-after: avoid !important;
         }
       }
     `,
@@ -568,10 +575,10 @@ function CleanInvoiceTemplate({
   const isPartial = invoice.paymentStatus === 'partial';
 
   return (
-    <div className="w-full h-full min-h-[297mm] p-6 sm:p-8 text-slate-900 bg-white flex flex-col justify-between print:p-0 print:m-0 print:min-h-0">
+    <div className="clean-invoice-page w-full h-full min-h-[297mm] p-6 sm:p-8 text-slate-900 bg-white flex flex-col justify-between print:p-2 print:m-0 print:min-h-0 print:text-[11px]">
       <div>
         {/* Top Header: Unboxed Minimalist Brand & Editorial Title */}
-        <div className="flex flex-col sm:flex-row justify-between items-start pb-6 mb-6 border-b border-slate-200 gap-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start pb-6 mb-6 print:pb-3 print:mb-3 border-b border-slate-200 gap-6 print:gap-3">
           <div>
             <h2 className="font-serif-luxury text-3xl font-bold tracking-tight text-slate-950">
               {companyNameEn}
@@ -790,10 +797,10 @@ function CleanInvoiceTemplate({
         </div>
 
         {/* Payment QR (Left) and Total Due (Right) side-by-side */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end mb-8 pt-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end mb-8 pt-2 print:mb-3 print:gap-4 print:pt-1">
           {/* Left Side: Pure QR Code without outline boxes */}
           {showQr ? (
-            <div className="flex items-end">
+            <div className="flex items-end print:scale-90 print:origin-bottom-left">
               <QRCodeSVG value={qrPaymentPayload} size={215} />
             </div>
           ) : (
@@ -801,10 +808,10 @@ function CleanInvoiceTemplate({
           )}
 
           {/* Right Side: Payment Info (on top of Total, align start) & Total Due */}
-          <div className="space-y-3">
+          <div className="space-y-3 print:space-y-1.5">
             {/* Bank Payment Info moved on top of Total Due, aligned start */}
             {showQr && (
-              <div className="text-left space-y-1 pb-3 border-b border-slate-200/90">
+              <div className="text-left space-y-1 pb-3 print:pb-1.5 border-b border-slate-200/90">
                 <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-widest font-mono">
                   SCAN TO PAY / ស្កេនទូទាត់
                 </p>
@@ -833,7 +840,7 @@ function CleanInvoiceTemplate({
             ) : null}
 
             {/* Grand Total - Matching screenshot */}
-            <div className="border-t-2 border-b-2 border-slate-950 py-3 flex justify-between items-baseline font-black font-mono">
+            <div className="border-t-2 border-b-2 border-slate-950 py-3 print:py-1.5 flex justify-between items-baseline font-black font-mono">
               <span className="text-sm sm:text-base tracking-wider text-slate-900">TOTAL:</span>
               <span className="text-2xl sm:text-3xl text-slate-950">
                 {formatCurrency(finalTotal)}
@@ -849,15 +856,15 @@ function CleanInvoiceTemplate({
       </div>
 
       {/* Signatures & Clean Footer: Bigger & more prominent per user request */}
-      <div className="pt-8 border-t border-slate-200">
+      <div className="pt-8 border-t border-slate-200 print:pt-3">
         {showSignatures && (
-          <div className="grid grid-cols-2 gap-10 text-xs sm:text-sm pb-6">
+          <div className="grid grid-cols-2 gap-10 text-xs sm:text-sm pb-6 print:pb-2">
             <div>
               <p className="font-bold text-slate-950 font-mono text-xs sm:text-sm uppercase tracking-wider">
                 Receiver Signature
               </p>
               <p className="text-xs sm:text-sm text-slate-500 font-khmer mt-0.5">ហត្ថលេខាអ្នកទទួលទំនិញ</p>
-              <div className="mt-16 sm:mt-20 border-b-2 border-slate-400 w-52 sm:w-64"></div>
+              <div className="mt-16 sm:mt-20 border-b-2 border-slate-400 w-52 sm:w-64 print:mt-10 print:w-44"></div>
               <p className="text-xs sm:text-sm font-bold text-slate-800 font-mono mt-2">
                 {invoice.customerName || 'Customer / Receiver'}
               </p>
@@ -868,7 +875,7 @@ function CleanInvoiceTemplate({
                 Authorized Signatory
               </p>
               <p className="text-xs sm:text-sm text-slate-500 font-khmer mt-0.5">ហត្ថលេខាអ្នកមានសិទ្ធិ</p>
-              <div className="mt-16 sm:mt-20 border-b-2 border-slate-400 w-52 sm:w-64 ml-auto"></div>
+              <div className="mt-16 sm:mt-20 border-b-2 border-slate-400 w-52 sm:w-64 ml-auto print:mt-10 print:w-44"></div>
               <p className="text-xs sm:text-sm font-bold text-slate-800 font-mono mt-2">
                 {invoice.driverName || settings.sellerName || 'Authorized Signatory'}
               </p>
